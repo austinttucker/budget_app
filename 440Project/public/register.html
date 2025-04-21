@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register</title>
+  </head>
+  <body>
+    <form>
+      <label for="User_ID">User-ID:</label>
+      <input type="text" id="User_ID" name="User_ID" required /><br /><br />
+
+      <label for="User_password">Password:</label>
+      <input
+        type="User_password"
+        id="User_password"
+        name="User_password"
+        required
+      /><br /><br />
+
+      <label for="confirmPassword">Confirm Password:</label>
+      <input
+        type="password"
+        id="confirmPassword"
+        name="confirmPassword"
+        required
+      /><br /><br />
+
+      <label for="Email">Email:</label>
+      <input type="Email" id="Email" name="Email" required /><br /><br />
+
+      <label for="Phone_number">Phone Number:</label>
+      <input
+        type="Phone_number"
+        id="Phone_number"
+        name="Phone_number"
+        required
+      /><br /><br />
+
+      <input type="submit" value="Register" />
+      <input type="reset" value="Reset" /><br /><br />
+    </form>
+    <script>
+            // JavaScript code to handle form submission and validation can be added here
+            document.querySelector('form').addEventListener('submit', async function(event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                // Perform validation and registration logic here
+                const userId = document.getElementById('User_ID').value;
+                const password = document.getElementById('User_password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const email = document.getElementById('Email').value;
+                const phoneNumber = document.getElementById('Phone_number').value;
+
+                if (password !== confirmPassword) {
+                    alert("Passwords do not match!");
+                    return;
+                }
+
+                // Here you would typically send the data to the server for registration
+                // console.log("User registered:", { userId, password, email, phoneNumber });
+                // alert("Registration successful!");
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, password, email, phoneNumber }),
+                });
+
+                const result = await response.json();
+                alert(result.message);
+            });
+    </script>
+  </body>
+</html>

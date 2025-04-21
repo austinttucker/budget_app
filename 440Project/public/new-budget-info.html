@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Budget Info</title>
+</head>
+<body>
+    <form id="budget-form" action="budget.html" method="post">
+        <label for="Total_dollars">Total Dollars:</label>
+        <input type="text" id="Total_dollars" name="Total_dollars" required><br><br>
+
+        <label for="Categories_Amount">Amount of Categories:</label>
+        <input type="text" id="Categories_amount" name="Categories_amount" required><br><br>
+
+        <label for="Budget-length">Budget Time Length:</label>
+        <input type="text" id="Budget-length" name="Budget-length" required><br><br>
+
+        <div id="category-fields"></div>
+
+        <input type="submit" value="Submit">
+        <input type="reset" value="Reset"><br><br>
+
+    </form>
+    <script>
+        const categoriesInput = document.getElementById("Categories_amount");
+        const categoryFieldsContainer = document.getElementById("category-fields");
+    
+        categoriesInput.addEventListener("change", function () {
+            const numberOfCategories = parseInt(this.value);
+            categoryFieldsContainer.innerHTML = ""; // Clear previous fields
+    
+            if (!isNaN(numberOfCategories) && numberOfCategories > 0) {
+                for (let i = 1; i <= numberOfCategories; i++) {
+                    // Container for each category
+                    const container = document.createElement("div");
+                    container.style.marginBottom = "15px";
+
+                    // Category Name
+                    const nameLabel = document.createElement("label");
+                    nameLabel.setAttribute("for", `category_${i}_name`);
+                    nameLabel.textContent = `Category ${i} Name:`;
+                    const nameInput = document.createElement("input");
+                    nameInput.type = "text";
+                    nameInput.id = `category_${i}_name`;
+                    nameInput.name = `category_${i}_name`;
+                    nameInput.required = true;
+
+                    // Max Amount
+                    const amountLabel = document.createElement("label");
+                    amountLabel.setAttribute("for", `category_${i}_max`);
+                    amountLabel.textContent = ` Max Amount ($):`;
+                    const amountInput = document.createElement("input");
+                    amountInput.type = "number";
+                    amountInput.id = `category_${i}_max`;
+                    amountInput.name = `category_${i}_max`;
+                    amountInput.min = "0";
+                    amountInput.required = true;
+
+                    // Add to container
+                    container.appendChild(nameLabel);
+                    container.appendChild(nameInput);
+                    container.appendChild(document.createElement("br"));
+
+                    container.appendChild(amountLabel);
+                    container.appendChild(amountInput);
+                    container.appendChild(document.createElement("br"));
+
+                    categoryFieldsContainer.appendChild(container);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
