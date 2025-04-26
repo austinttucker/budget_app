@@ -7,8 +7,8 @@
   </head>
   <body>
     <form>
-      <label for="User_ID">User-ID:</label>
-      <input type="text" id="User_ID" name="User_ID" required /><br /><br />
+      <label for="User_name">Username:</label>
+      <input type="text" id="User_name" name="User_name" required /><br /><br />
 
       <label for="User_password">Password:</label>
       <input
@@ -41,34 +41,43 @@
       <input type="reset" value="Reset" /><br /><br />
     </form>
     <script>
-            // JavaScript code to handle form submission and validation can be added here
-            document.querySelector('form').addEventListener('submit', async function(event) {
-                event.preventDefault(); // Prevent the default form submission
+      // JavaScript code to handle form submission and validation can be added here
+      document
+        .querySelector("form")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault(); // Prevent the default form submission
 
-                // Perform validation and registration logic here
-                const userId = document.getElementById('User_ID').value;
-                const password = document.getElementById('User_password').value;
-                const confirmPassword = document.getElementById('confirmPassword').value;
-                const email = document.getElementById('Email').value;
-                const phoneNumber = document.getElementById('Phone_number').value;
+          // Perform validation and registration logic here
+          const userName = document.getElementById("User_name").value;
+          const password = document.getElementById("User_password").value;
+          const confirmPassword =
+            document.getElementById("confirmPassword").value;
+          const email = document.getElementById("Email").value;
+          const phoneNumber = document.getElementById("Phone_number").value;
 
-                if (password !== confirmPassword) {
-                    alert("Passwords do not match!");
-                    return;
-                }
+          if (password !== confirmPassword) {
+            alert("Passwords do not match!");
+            return;
+          }
 
-                // Here you would typically send the data to the server for registration
-                // console.log("User registered:", { userId, password, email, phoneNumber });
-                // alert("Registration successful!");
-                const response = await fetch('/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId, password, email, phoneNumber }),
-                });
+          // Here you would typically send the data to the server for registration
+          // console.log("User registered:", { userId, password, email, phoneNumber });
+          // alert("Registration successful!");
+          const response = await fetch("http://localhost:3000/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userName, password, email, phoneNumber }),
+          });
 
-                const result = await response.json();
-                alert(result.message);
-            });
+          if (response.ok) {
+            // Successful registration
+            alert("Registration successful!");
+            window.location.href = "index.html"; // <-- redirect to your homepage
+          } else {
+            const result = await response.json();
+            alert(result.message || "Registration failed");
+          }
+        });
     </script>
   </body>
 </html>

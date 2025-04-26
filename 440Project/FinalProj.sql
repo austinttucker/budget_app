@@ -1,5 +1,6 @@
 CREATE TABLE Users (
     User_ID INT PRIMARY KEY,
+    User_Name VARCHAR(100),
     User_password VARCHAR(100),
     Email VARCHAR(255),
     Phone_number VARCHAR(20)
