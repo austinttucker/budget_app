@@ -50,13 +50,28 @@
           // Perform validation and registration logic here
           const userName = document.getElementById("User_name").value;
           const password = document.getElementById("User_password").value;
-          const confirmPassword =
-            document.getElementById("confirmPassword").value;
+          const confirmPassword = document.getElementById("confirmPassword").value;
           const email = document.getElementById("Email").value;
           const phoneNumber = document.getElementById("Phone_number").value;
 
+          if(!email || !password || !confirmPassword || !phoneNumber || !userName) {
+            alert("Please fill in all fields!");
+            return;
+          }
           if (password !== confirmPassword) {
             alert("Passwords do not match!");
+            return;
+          }
+          if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            alert("Invalid email format!");
+            return;
+          }
+          if(!/^\d{10}$/.test(phoneNumber)) {
+            alert("Phone number must be 10 digits!");
+            return;
+          }
+          if(!/^[a-zA-Z0-9]+$/.test(userName)) {
+            alert("Username can only contain letters and numbers!");
             return;
           }
 

@@ -7,28 +7,37 @@ const db = mysql.createPool({
     database: 'proj'
   }).promise()
 
-//   const result = await db.query("SELECT * FROM users")
-//     console.log(result)
 
-async function getUsers() {
-    const [rows] = await db.query("SELECT * FROM users")
-    return rows
+async function getUser(User_name, User_password) {
+    try {
+        const [rows] = await db.query(
+            "SELECT User_ID, User_password FROM users WHERE User_Name = ?", 
+            [User_name]
+        );
+
+        if (rows.length > 0 && rows[0].User_password === User_password) {
+            return rows[0].User_ID; // Get the ID of the user
+        } else {
+            return null; // No user found
+        }
+
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
 }
-async function getUserById(id) {
-    const [rows] = await db.query("SELECT * FROM users WHERE id = ?", [id])
-    return rows[0]
-}
+
+
 async function createUser(User_Name, User_Password, Email, Phone_number) {
     const User_ID = Math.floor(Math.random() * 1000000) // Generate a random user ID
     // Check if the user ID already exists in the database
     const [existingUser] = await db.query("SELECT * FROM users WHERE User_ID = ?", [User_ID])
     if (existingUser.length > 0) {
         // If the user ID already exists, generate a new one and check again
-        return createUser(User_Name, User_Password, Email, Phone_number)
+        return createUser(User_Name, User_Password, Email, Phone_number);
     }
     const [result] = await db.query("INSERT INTO users (User_ID, User_Name, User_Password, Email, Phone_number) VALUES (?, ?, ?, ?, ?)",
-         [User_ID, User_Name, User_Password, Email, Phone_number])
-    return result.insertId
+         [User_ID, User_Name, User_Password, Email, Phone_number]);
+    return result.insertId;
 }
-// const result = await createUser("Austin", "Donut", "austinjaxbch@gmail.com", "(904)-234-0645")
-export { createUser };
+export { createUser, getUser };
