@@ -1,15 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Budget Info</title>
-</head>
-<body>
+  </head>
+  <body>
+    <h1 id="welcomeMessage"></h1>
     <div class="toggle">
-        <a href="budget-info.html" id="toggle-link">Edit Budget Info</a>
-        <a href="new-budget-info.html" id="toggle-link">Add Budget</a>
-        <a href="transaction.html" id="toggle-link">Add Transaction</a>
+      <a href="budget-info.html" id="toggle-link">Edit Budget Info</a>
+      <a href="new-budget-info.html" id="toggle-link">Add Budget</a>
+      <a href="transaction.html" id="toggle-link">Add Transaction</a>
+      <a href="index.html" id="logout">Logout</a>
     </div>
-</body>
+    <script>
+      window.addEventListener("DOMContentLoaded", function () {
+        const userName = localStorage.getItem("userName");
+
+        if (userName) {
+          document.getElementById(
+            "welcomeMessage"
+          ).textContent = `Budgets for ${userName}`;
+        } else {
+          document.getElementById("welcomeMessage").textContent = "Welcome!";
+        }
+      });
+      document
+        .getElementById("logout")
+        .addEventListener("click", function (event) {
+          event.preventDefault(); // Prevent the default link behavior (optional if you want to control logout fully)
+
+          // Clear any stored user data (optional but recommended)
+          localStorage.removeItem("userID");
+          localStorage.removeItem("userName");
+
+          // Redirect to login page (index.html)
+          window.location.href = "index.html";
+
+          console.log("Logout link clicked!");
+        });
+    </script>
+  </body>
 </html>

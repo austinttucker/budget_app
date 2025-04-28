@@ -9,6 +9,10 @@
   <body>
     <form id="user-form" action="budget.html" method="post">
       <div class="form-group">
+        <label for="User_ID">User ID:</label>
+        <input type="text" id="User_ID" name="User_ID" required />
+      </div>
+      <div class="form-group">
         <label for="User_name">Username:</label>
         <input type="text" id="User_name" name="User_name" required />
       </div>
@@ -40,11 +44,11 @@
           event.preventDefault(); // Prevent the default form submission
 
           // Perform validation and registration logic here
+          const userID = document.getElementById("User_ID").value;
           const userName = document.getElementById("User_name").value;
           const password = document.getElementById("User_password").value;
-          const sqlUser = "SELECT * FROM users WHERE username = ?";
 
-          if(!userName || !password) {
+          if (!userName || !password || !userID) {
             alert("Please fill in all fields!");
             return;
           }
@@ -52,11 +56,13 @@
           const response = await fetch("http://localhost:3000/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ userName, password}),
+            body: JSON.stringify({ userID, userName, password }),
           });
           if (response.ok) {
             // Successful registration
             alert("Login successful!");
+            localStorage.setItem("userID", userID);
+            localStorage.setItem("userName", userName);
             window.location.href = "budget.html"; // Redirect to budget.html after successful login
           } else {
             const result = await response.json();

@@ -8,15 +8,20 @@ const db = mysql.createPool({
   }).promise()
 
 
-async function getUser(User_name, User_password) {
+async function getUser(User_ID, User_name, User_password) {
     try {
         const [rows] = await db.query(
-            "SELECT User_ID, User_password FROM users WHERE User_Name = ?", 
-            [User_name]
+            "SELECT User_Name, User_password FROM users WHERE User_ID = ?", 
+            [User_ID]
         );
 
         if (rows.length > 0 && rows[0].User_password === User_password) {
-            return rows[0].User_ID; // Get the ID of the user
+            if(rows[0].User_Name === User_name) {
+                return rows[0].User_ID; // Get the ID of the user
+            }
+            else {
+                return null; // User name does not match
+            }
         } else {
             return null; // No user found
         }
@@ -66,5 +71,21 @@ async function createBudget(User_ID, Total_dollars, Categories_amount, budget_le
         "INSERT INTO BudgetTotals (Budget_ID, Spent_dollars, Remaining_dollars Total_dollars, Categories_amount, Start_date, End_refresh_date, User_ID) VALUES (?, ?, ?, ?, ?, ?, ?)",
          [Budget_ID, Spent_dollars, Remaining_dollars, Total_dollars, Categories_amount, Start_date, End_refresh_date, User_ID]);
     return result.insertId;
+}
+async function createCategories(Budget_ID, CategoryMap){
+    const Category_ID = Math.floor(Math.random() * 1000000) // Generate a random category ID
+    forEach(CategoryMap, async (value, key) => {
+        const [existingCategory] = await db.query("SELECT * FROM Categories WHERE Category_ID = ?", [Category_ID])
+        if (existingCategory.length > 0) {
+            // If the category ID already exists, generate a new one and check again
+            return createCategories(Budget_ID, CategoryMap);
+        }
+        Category_name = value;
+        Category_amount = key;
+        const [result] = await db.query("INSERT INTO Categories (Category_ID, Category_name, Category_amount, Budget_ID) VALUES (?, ?, ?, ?)",
+            [Category_ID, Category_name, Category_amount, Budget_ID]);
+            return result.insertId;
+    });
+    return;
 }
 export { createUser, getUser, createBudget };

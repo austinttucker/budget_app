@@ -21,13 +21,13 @@ app.post('/register', async (req, res) => {
   }
 });
 app.post('/login', async (req, res) => {
-  const { userName, password } = req.body;
+  const { user_ID, userName, password } = req.body;
   try{
-    const userID = await getUser(userName, password);
+    const userID = await getUser(user_ID, userName, password);
     if (!userID) {
       return res.status(401).json({ message: "Invalid username or password." });
     }
-    res.json({ message: "Login successful!", userID });
+    res.json({ message: "Login successful!", userID, userName });
   }
  catch (err) {
     console.error(err);
