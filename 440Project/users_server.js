@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { createUser, getUser } from './database.js'; // Import the createUser function from database.js
+import { createUser, getUser, createBudget } from './database.js'; // Import the createUser function from database.js
 const app = express();
 const port = 3000;
 
@@ -32,6 +32,20 @@ app.post('/login', async (req, res) => {
  catch (err) {
     console.error(err);
     res.status(500).json({ message: "Login failed." });
+  }
+});
+app.post('/budget', async (req, res) => {
+  const { userID, totalDollars, categoriesAmount } = req.body;
+  try{
+    const budgetID = await createBudget(userID, totalDollars, categoriesAmount);
+    if (!budgetID) {
+      return res.status(401).json({ message: "Budget data invalid." });
+    }
+    res.json({ message: "Budget created successfully!", budgetID });
+  }
+ catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Budget creation failed." });
   }
 });
 app.post('/transaction', async (req, res) => {

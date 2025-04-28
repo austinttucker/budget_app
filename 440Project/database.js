@@ -40,4 +40,31 @@ async function createUser(User_Name, User_Password, Email, Phone_number) {
          [User_ID, User_Name, User_Password, Email, Phone_number]);
     return result.insertId;
 }
-export { createUser, getUser };
+
+async function createBudget(User_ID, Total_dollars, Categories_amount, budget_length) {
+    const Budget_ID = Math.floor(Math.random() * 1000000) // Generate a random budget ID
+    const Spent_dollars = 0;
+    const Remaining_dollars = Total_dollars;
+    const Start_date = new Date().toISOString().slice(0, 10); // Get the current date in YYYY-MM-DD format
+    var End_refresh_date;
+    if(budget_length == "Weekly") {
+        End_refresh_date = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10); // Add 7 days to the current date
+    }
+    else if(budget_length == "Monthly") {
+        End_refresh_date = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10); // Add 30 days to the current date
+    }
+    else if(budget_length == "Yearly") {
+        End_refresh_date = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10); // Add 365 days to the current date
+    }
+    else if (budget_length == "Daily") {
+        End_refresh_date = new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10); // Add 1 day to the current date
+    }
+    else {
+        throw new Error("Invalid budget length. Please choose Weekly, Monthly, Yearly, or Daily.");
+    }
+    const [result] = await db.query(
+        "INSERT INTO BudgetTotals (Budget_ID, Spent_dollars, Remaining_dollars Total_dollars, Categories_amount, Start_date, End_refresh_date, User_ID) VALUES (?, ?, ?, ?, ?, ?, ?)",
+         [Budget_ID, Spent_dollars, Remaining_dollars, Total_dollars, Categories_amount, Start_date, End_refresh_date, User_ID]);
+    return result.insertId;
+}
+export { createUser, getUser, createBudget };

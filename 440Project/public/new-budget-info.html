@@ -1,103 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>New Budget Info</title>
-</head>
-<body>
+  </head>
+  <body>
     <form id="budget-form" action="budget.html" method="post">
-        <label for="Total_dollars">Total Dollars:</label>
-        <input type="text" id="Total_dollars" name="Total_dollars" required><br><br>
+      <label for="Total_dollars">Total Dollars:</label>
+      <input
+        type="text"
+        id="Total_dollars"
+        name="Total_dollars"
+        required
+      /><br /><br />
 
-        <label for="Categories_Amount">Amount of Categories:</label>
-        <input type="text" id="Categories_amount" name="Categories_amount" required><br><br>
+      <label for="Categories_Amount">Amount of Categories:</label>
+      <input
+        type="text"
+        id="Categories_amount"
+        name="Categories_amount"
+        required
+      /><br /><br />
 
-        <label for="Budget-length">Budget Time Length:</label>
-        <input type="text" id="Budget-length" name="Budget-length" required><br><br>
+      <label for="Budget_length">Budget Time Length:</label>
+      <select id="Budget_length" name="Budget_length" required>
+        <option value="day">Daily</option>
+        <option value="week">Weekly</option>
+        <option value="month">Monthly</option>
+        <option value="year">Yearly</option>
+      </select>
+      <br /><br />
 
-        <div id="category-fields"></div>
+      <div id="category-fields"></div>
 
-        <input type="submit" value="Submit">
-        <input type="reset" value="Reset"><br><br>
-
+      <input type="submit" value="Submit" />
+      <input type="reset" value="Reset" /><br /><br />
     </form>
     <script>
-        const categoriesInput = document.getElementById("Categories_amount");
-        const categoryFieldsContainer = document.getElementById("category-fields");
-    
-        categoriesInput.addEventListener("change", function () {
-            const numberOfCategories = parseInt(this.value);
-            categoryFieldsContainer.innerHTML = ""; // Clear previous fields
-    
-            if (!isNaN(numberOfCategories) && numberOfCategories > 0) {
-                for (let i = 1; i <= numberOfCategories; i++) {
-                    // Container for each category
-                    const container = document.createElement("div");
-                    container.style.marginBottom = "15px";
+      const categoriesInput = document.getElementById("Categories_amount");
+      const categoryFieldsContainer =
+        document.getElementById("category-fields");
 
-                    // Category Name
-                    const nameLabel = document.createElement("label");
-                    nameLabel.setAttribute("for", `category_${i}_name`);
-                    nameLabel.textContent = `Category ${i} Name:`;
-                    const nameInput = document.createElement("input");
-                    nameInput.type = "text";
-                    nameInput.id = `category_${i}_name`;
-                    nameInput.name = `category_${i}_name`;
-                    nameInput.required = true;
+      categoriesInput.addEventListener("change", function () {
+        const numberOfCategories = parseInt(this.value);
+        categoryFieldsContainer.innerHTML = ""; // Clear previous fields
 
-                    // Max Amount
-                    const amountLabel = document.createElement("label");
-                    amountLabel.setAttribute("for", `category_${i}_max`);
-                    amountLabel.textContent = ` Max Amount ($):`;
-                    const amountInput = document.createElement("input");
-                    amountInput.type = "number";
-                    amountInput.id = `category_${i}_max`;
-                    amountInput.name = `category_${i}_max`;
-                    amountInput.min = "0";
-                    amountInput.required = true;
+        if (!isNaN(numberOfCategories) && numberOfCategories > 0) {
+          for (let i = 1; i <= numberOfCategories; i++) {
+            // Container for each category
+            const container = document.createElement("div");
+            container.style.marginBottom = "15px";
 
-                    // Add to container
-                    container.appendChild(nameLabel);
-                    container.appendChild(nameInput);
-                    container.appendChild(document.createElement("br"));
+            // Category Name
+            const nameLabel = document.createElement("label");
+            nameLabel.setAttribute("for", `category_${i}_name`);
+            nameLabel.textContent = `Category ${i} Name:`;
+            const nameInput = document.createElement("input");
+            nameInput.type = "text";
+            nameInput.id = `category_${i}_name`;
+            nameInput.name = `category_${i}_name`;
+            nameInput.required = true;
 
-                    container.appendChild(amountLabel);
-                    container.appendChild(amountInput);
-                    container.appendChild(document.createElement("br"));
+            // Max Amount
+            const amountLabel = document.createElement("label");
+            amountLabel.setAttribute("for", `category_${i}_max`);
+            amountLabel.textContent = ` Max Amount ($):`;
+            const amountInput = document.createElement("input");
+            amountInput.type = "number";
+            amountInput.id = `category_${i}_max`;
+            amountInput.name = `category_${i}_max`;
+            amountInput.min = "0";
+            amountInput.required = true;
 
-                    categoryFieldsContainer.appendChild(container);
-                }
-            }
+            // Add to container
+            container.appendChild(nameLabel);
+            container.appendChild(nameInput);
+            container.appendChild(document.createElement("br"));
+
+            container.appendChild(amountLabel);
+            container.appendChild(amountInput);
+            container.appendChild(document.createElement("br"));
+
+            categoryFieldsContainer.appendChild(container);
+          }
+        }
+      });
+      document
+        .querySelector("form")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault(); // Prevent the default form submission
+
+          // Perform validation and registration logic here
+          const totalDollars = document.getElementById("Total_dollars").value;
+          const categoriesAmount =
+            document.getElementById("Categories_amount").value;
+          const budgetLength = document.getElementById("Budget-length").value;
+          const categoryMap = collectCategoryData();
+
+          if (!totalDollars || !categoriesAmount || !budgetLength) {
+            alert("Please fill in all fields!");
+            return;
+          }
+          var totalAmount = 0;
+          categoryMap.forEach((name, amount) => {
+            totalAmount += amount;
+          });
+          if(totalAmount > totalDollars) {
+            alert("Total amount in combined categories exceeds the budget limit!");
+            return;
+          }
+          const response = await fetch("http://localhost:3000/budget", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              totalDollars,
+              categoriesAmount,
+              categoriesDataMap,
+              budgetLength,
+            }),
+          });
+          if (response.ok) {
+            // Successful registration
+            alert("Budget info submitted successfully!");
+            window.location.href = "budget.html"; // Redirect to budget.html after successful login
+          } else {
+            alert("Submission failed. Please try again.");
+          }
         });
-        document
-            .querySelector("form")
-            .addEventListener("submit", async function (event) {
-                event.preventDefault(); // Prevent the default form submission
+      function collectCategoryData() {
+        const categoryDataMap = new Map();
 
-                // Perform validation and registration logic here
-                const totalDollars = document.getElementById("Total_dollars").value;
-                const categoriesAmount = document.getElementById("Categories_amount").value;
-                const budgetLength = document.getElementById("Budget-length").value;
+        for (let i = 1; i <= numberOfCategories; i++) {
+          const nameInput = document.getElementById(`category_${i}_name`);
+          const amountInput = document.getElementById(`category_${i}_max`);
 
-                if (!totalDollars || !categoriesAmount || !budgetLength) {
-                    alert("Please fill in all fields!");
-                    return;
-                }
+          if (nameInput && amountInput) {
+            const name = nameInput.value.trim();
+            const amount = parseFloat(amountInput.value);
 
-                const response = await fetch("http://localhost:3000/budget", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ totalDollars, categoriesAmount, budgetLength }),
-                });
-                if (response.ok) {
-                    // Successful registration
-                    alert("Budget info submitted successfully!");
-                    window.location.href = "budget.html"; // Redirect to budget.html after successful login
-                } else {
-                    alert("Submission failed. Please try again.");
-                }
-            });
+            if (name && !isNaN(amount)) {
+              categoryDataMap.set(name, amount);
+            }
+          }
+        }
+
+        return categoryDataMap;
+      }
     </script>
-</body>
+  </body>
 </html>
