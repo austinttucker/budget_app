@@ -70,6 +70,34 @@
                 }
             }
         });
+        document
+            .querySelector("form")
+            .addEventListener("submit", async function (event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                // Perform validation and registration logic here
+                const totalDollars = document.getElementById("Total_dollars").value;
+                const categoriesAmount = document.getElementById("Categories_amount").value;
+                const budgetLength = document.getElementById("Budget-length").value;
+
+                if (!totalDollars || !categoriesAmount || !budgetLength) {
+                    alert("Please fill in all fields!");
+                    return;
+                }
+
+                const response = await fetch("http://localhost:3000/budget", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ totalDollars, categoriesAmount, budgetLength }),
+                });
+                if (response.ok) {
+                    // Successful registration
+                    alert("Budget info submitted successfully!");
+                    window.location.href = "budget.html"; // Redirect to budget.html after successful login
+                } else {
+                    alert("Submission failed. Please try again.");
+                }
+            });
     </script>
 </body>
 </html>

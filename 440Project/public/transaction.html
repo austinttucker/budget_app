@@ -12,10 +12,42 @@
 
         <label for="Transaction_name">Label the Transaction:</label>
         <input type="text" id="Transaction_name" name="Transaction_name" required><br><br>
-
+        
+        <label for="Category">Category:</label>
+        <input type="text" id="Category" name="Category" required><br><br>
 
         <input type="submit" value="Submit">
         <input type="reset" value="Reset"><br><br>
     </form>
+    <script>
+        document
+            .querySelector("form")
+            .addEventListener("submit", async function (event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                // Perform validation and registration logic here
+                const transactionAmount = document.getElementById("Transaction_amount").value;
+                const transactionName = document.getElementById("Transaction_name").value;
+                const category = document.getElementById("Category").value;
+
+                if (!transactionAmount || !transactionName || !category) {
+                    alert("Please fill in all fields!");
+                    return;
+                }
+
+                const response = await fetch("http://localhost:3000/transaction", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ transactionAmount, transactionName, category }),
+                });
+                if (response.ok) {
+                    // Successful registration
+                    alert("Transaction successful!");
+                    window.location.href = "budget.html"; // Redirect to budget.html after successful login
+                } else {
+                    alert("Transaction failed. Please try again.");
+                }
+            });
+    </script>
 </body>
 </html>
