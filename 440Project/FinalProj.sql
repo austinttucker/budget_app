@@ -7,7 +7,7 @@ CREATE TABLE Users (
 );
 
 CREATE TABLE BudgetTotals (
-    Budget_ID INT PRIMARY KEY,
+    Budget_ID INT PRIMARY KEY AUTO_INCREMENT,
     Spent_dollars DECIMAL(10, 2),
     Remaining_dollars DECIMAL(10, 2),
     Total_dollars DECIMAL(10, 2),
@@ -19,7 +19,8 @@ CREATE TABLE BudgetTotals (
 );
 
 CREATE TABLE Categories (
-    Category_ID INT PRIMARY KEY,
+    Category_ID INT PRIMARY KEY AUTO_INCREMENT,
+    Category_name VARCHAR(100),
     Max_amount DECIMAL(10, 2),
     Dollars_spent DECIMAL(10, 2),
     Num_transactions INT,

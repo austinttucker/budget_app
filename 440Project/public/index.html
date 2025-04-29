@@ -52,7 +52,9 @@
             alert("Please fill in all fields!");
             return;
           }
-
+          console.log("UserID:", userID); // Debugging: Log values to check
+          console.log("UserName:", userName);
+          console.log("Password:", password);
           const response = await fetch("http://localhost:3000/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },

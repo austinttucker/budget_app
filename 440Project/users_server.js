@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { createUser, getUser, createBudget } from './database.js'; // Import the createUser function from database.js
+import { createUser, getUser, createBudget, createCategories } from './database.js'; // Import the createUser function from database.js
 const app = express();
 const port = 3000;
 
@@ -24,8 +24,11 @@ app.post('/login', async (req, res) => {
   const { user_ID, userName, password } = req.body;
   try{
     const userID = await getUser(user_ID, userName, password);
-    if (!userID) {
-      return res.status(401).json({ message: "Invalid username or password." });
+    if (userID === "P") {
+      return res.status(401).json({ message: "Invalid password." });
+    }
+    if(userID ==="U"){
+      return res.status(401).json({ message: "User not found." });
     }
     res.json({ message: "Login successful!", userID, userName });
   }
@@ -35,9 +38,9 @@ app.post('/login', async (req, res) => {
   }
 });
 app.post('/budget', async (req, res) => {
-  const { userID, totalDollars, categoriesAmount } = req.body;
+  const { totalDollars, categoriesAmount, budgetLength, userID } = req.body;
   try{
-    const budgetID = await createBudget(userID, totalDollars, categoriesAmount);
+    const budgetID = await createBudget(totalDollars, categoriesAmount, budgetLength, userID);
     if (!budgetID) {
       return res.status(401).json({ message: "Budget data invalid." });
     }
@@ -46,6 +49,20 @@ app.post('/budget', async (req, res) => {
  catch (err) {
     console.error(err);
     res.status(500).json({ message: "Budget creation failed." });
+  }
+});
+app.post('/category', async (req, res) => {
+  const { categoryData, budgetID } = req.body;
+  try{
+    const categories = await createCategories(budgetID, categoryData);
+    if (!categories) {
+      return res.status(401).json({ message: "Category data invalid." });
+    }
+    res.json({ message: "Category created successfully!", categoryData });
+  }
+ catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Category creation failed." });
   }
 });
 app.post('/transaction', async (req, res) => {

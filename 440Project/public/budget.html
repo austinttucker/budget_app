@@ -31,8 +31,7 @@
           event.preventDefault(); // Prevent the default link behavior (optional if you want to control logout fully)
 
           // Clear any stored user data (optional but recommended)
-          localStorage.removeItem("userID");
-          localStorage.removeItem("userName");
+          localStorage.clear();
 
           // Redirect to login page (index.html)
           window.location.href = "index.html";

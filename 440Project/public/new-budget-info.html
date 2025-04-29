@@ -25,10 +25,10 @@
 
       <label for="Budget_length">Budget Time Length:</label>
       <select id="Budget_length" name="Budget_length" required>
-        <option value="day">Daily</option>
-        <option value="week">Weekly</option>
-        <option value="month">Monthly</option>
-        <option value="year">Yearly</option>
+        <option value="Daily">Daily</option>
+        <option value="Weekly">Weekly</option>
+        <option value="Monthly">Monthly</option>
+        <option value="Yearly">Yearly</option>
       </select>
       <br /><br />
 
@@ -92,22 +92,35 @@
           event.preventDefault(); // Prevent the default form submission
 
           // Perform validation and registration logic here
-          const totalDollars = document.getElementById("Total_dollars").value;
-          const categoriesAmount =
-            document.getElementById("Categories_amount").value;
-          const budgetLength = document.getElementById("Budget-length").value;
-          const categoryMap = collectCategoryData();
-
+          const totalDollars = parseFloat(
+            document.getElementById("Total_dollars").value
+          );
+          const categoriesAmount = parseInt(
+            document.getElementById("Categories_amount").value
+          );
+          const budgetLength = document
+            .getElementById("Budget_length")
+            .value.trim();
+          const categoryData = collectCategoryData(categoriesAmount);
+          //console.log("Category Data:", categoryData); // Debugging: Log values to check
           if (!totalDollars || !categoriesAmount || !budgetLength) {
             alert("Please fill in all fields!");
             return;
           }
           var totalAmount = 0;
-          categoryMap.forEach((name, amount) => {
-            totalAmount += amount;
+          categoryData.forEach(([name, amount]) => {
+            totalAmount += amount; // Sum the amounts
           });
-          if(totalAmount > totalDollars) {
-            alert("Total amount in combined categories exceeds the budget limit!");
+          //console.log("Total Amount:", totalAmount); // Debugging: Log values to check
+          if (totalAmount > totalDollars) {
+            alert(
+              "Total amount in combined categories exceeds the budget limit!"
+            );
+            return;
+          }
+          const userID = localStorage.getItem("userID");
+          if (!userID) {
+            alert("User ID not found. Please log in again.");
             return;
           }
           const response = await fetch("http://localhost:3000/budget", {
@@ -116,22 +129,41 @@
             body: JSON.stringify({
               totalDollars,
               categoriesAmount,
-              categoriesDataMap,
               budgetLength,
+              userID,
             }),
           });
+          const data = await response.json(); // Parse the JSON response
           if (response.ok) {
             // Successful registration
             alert("Budget info submitted successfully!");
-            window.location.href = "budget.html"; // Redirect to budget.html after successful login
+            const budgetID = data.budgetID; // Assuming the server returns the budget ID in the response
+            //console.log("Budget ID:", budgetID); // Debugging: Log values to check
+            const response2 = await fetch("http://localhost:3000/category", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                categoryData,
+                budgetID,
+              }),
+            });
+            if (response2.ok) {
+              // Successful registration
+              alert("Category info submitted successfully!");
+              //localStorage.setItem("Budget_ID", Budget_ID);
+              window.location.href = "budget.html"; // Redirect to budget.html after successful login
+            } else {
+              const result = await response2.json();
+              alert(result.message || "Failed to submit category info.");
+            }
           } else {
             alert("Submission failed. Please try again.");
           }
         });
-      function collectCategoryData() {
+      function collectCategoryData(categoriesAmount) {
         const categoryDataMap = new Map();
 
-        for (let i = 1; i <= numberOfCategories; i++) {
+        for (let i = 1; i <= categoriesAmount; i++) {
           const nameInput = document.getElementById(`category_${i}_name`);
           const amountInput = document.getElementById(`category_${i}_max`);
 
@@ -145,7 +177,7 @@
           }
         }
 
-        return categoryDataMap;
+        return Array.from(categoryDataMap.entries());
       }
     </script>
   </body>
