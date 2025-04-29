@@ -78,11 +78,46 @@ async function createCategories(Budget_ID, CategoryData){
         const Num_transactions = 0;
         const Remaining_dollars = Max_amount;
 
-        const [result] = await db.query(
+        await db.query(
             "INSERT INTO Categories (Category_name, Max_amount, Dollars_spent, Num_transactions, Remaining_dollars, Budget_ID) VALUES (?, ?, ?, ?, ?, ?)",
             [Category_name, Max_amount, Dollars_spent, Num_transactions, Remaining_dollars, Budget_ID]
         );
-        return result.insertId;
     }
 }
-export { createUser, getUser, createBudget, createCategories };
+async function getCategories() {
+    try {
+        const [categories] = await db.query("SELECT Category_name FROM Categories");
+        return categories;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+}
+async function createTransaction(Transaction_amount, Transaction_name, category) {
+    const [rows] = await db.query("SELECT * FROM Categories WHERE Category_name = ?", [category]);
+    const Category_ID = rows[0].Category_ID;
+    const [categoryRows] = await db.query("SELECT * FROM Categories WHERE Category_ID = ?", [Category_ID]);
+    var Remaining_dollars = parseFloat(categoryRows[0].Remaining_dollars) - parseFloat(Transaction_amount);
+    const Dollars_spent = parseFloat(categoryRows[0].Dollars_spent) + parseFloat(Transaction_amount);
+    if(Dollars_spent > categoryRows[0].Max_amount || Remaining_dollars < 0) {
+        throw new Error("Transaction amount exceeds category limit or remaining dollars are negative.");
+    }
+    const Num_transactions = categoryRows[0].Num_transactions + 1;
+    await db.query(
+        "UPDATE Categories SET Dollars_spent = ?, Num_transactions = ?, Remaining_dollars = ? WHERE Category_ID = ?",
+        [Dollars_spent, Num_transactions, Remaining_dollars, Category_ID]
+    );
+    const Spent_dollars = Dollars_spent;
+    const [budgetRows] = await db.query("SELECT * FROM BudgetTotals WHERE Budget_ID = ?", [categoryRows[0].Budget_ID]);
+    Remaining_dollars = budgetRows[0].Remaining_dollars - Transaction_amount;
+    await db.query(
+        "UPDATE BudgetTotals SET Spent_dollars = ?, Remaining_dollars = ? WHERE Budget_ID = ?",
+        [Spent_dollars, Remaining_dollars, categoryRows[0].Budget_ID]
+    );
+    const [result] = await db.query(
+        "INSERT INTO Transactions (Transaction_amount, Transaction_name, Category_ID) VALUES (?, ?, ?)",
+        [Transaction_amount, Transaction_name, Category_ID]
+    );
+    return result.insertId;
+}
+export { createUser, getUser, createBudget, createCategories, getCategories, createTransaction };

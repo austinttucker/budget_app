@@ -30,8 +30,9 @@ CREATE TABLE Categories (
 );
 
 CREATE TABLE Transactions (
-    Transaction_ID INT PRIMARY KEY,
+    Transaction_ID INT PRIMARY KEY AUTO_INCREMENT,
     Transaction_amount DECIMAL(10, 2),
+    Transaction_name VARCHAR(255),
     Category_ID INT,
     FOREIGN KEY (Category_ID) REFERENCES Categories(Category_ID)
 );
