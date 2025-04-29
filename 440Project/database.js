@@ -133,4 +133,12 @@ async function refreshBudget(userID) {
     }
     return false;
 }
-export { createUser, getUser, createBudget, createCategories, getCategories, createTransaction, refreshBudget };
+async function getBudget(userID){
+    const [rows] = await db.query("SELECT * FROM BudgetTotals WHERE User_ID = ?", [userID]);
+    if (rows.length > 0) {
+        return rows[0];
+    } else {
+        throw new Error("No budget found for the user.");
+    }
+}
+export { createUser, getUser, createBudget, createCategories, getCategories, createTransaction, refreshBudget, getBudget };

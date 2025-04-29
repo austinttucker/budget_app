@@ -1,11 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Budget Info</title>
-</head>
-<body>
-    
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Categories</title>
+  </head>
+  <body>
+    <form id="categories-form" action="budget.html" method="post">
+      <label for="Categories_Amount">Amount of New Categories:</label>
+      <input
+        type="text"
+        id="Categories_amount"
+        name="Categories_amount"
+        required
+      /><br /><br />
+      <div id="category-fields"></div>
+
+      <input type="submit" value="Submit" />
+      <input type="reset" value="Reset" /><br /><br />
+    </form>
+    <script>
+      const categoriesInput = document.getElementById("Categories_amount");
+      const categoryFieldsContainer =
+        document.getElementById("category-fields");
+
+      categoriesInput.addEventListener("change", function () {
+        const numberOfCategories = parseInt(this.value);
+        categoryFieldsContainer.innerHTML = ""; // Clear previous fields
+
+        if (!isNaN(numberOfCategories) && numberOfCategories > 0) {
+          for (let i = 1; i <= numberOfCategories; i++) {
+            // Container for each category
+            const container = document.createElement("div");
+            container.style.marginBottom = "15px";
+
+            // Category Name
+            const nameLabel = document.createElement("label");
+            nameLabel.setAttribute("for", `category_${i}_name`);
+            nameLabel.textContent = `Category ${i} Name:`;
+            const nameInput = document.createElement("input");
+            nameInput.type = "text";
+            nameInput.id = `category_${i}_name`;
+            nameInput.name = `category_${i}_name`;
+            nameInput.required = true;
+
+            // Max Amount
+            const amountLabel = document.createElement("label");
+            amountLabel.setAttribute("for", `category_${i}_max`);
+            amountLabel.textContent = ` Max Amount ($):`;
+            const amountInput = document.createElement("input");
+            amountInput.type = "number";
+            amountInput.id = `category_${i}_max`;
+            amountInput.name = `category_${i}_max`;
+            amountInput.min = "0";
+            amountInput.required = true;
+
+            // Add to container
+            container.appendChild(nameLabel);
+            container.appendChild(nameInput);
+            container.appendChild(document.createElement("br"));
+
+            container.appendChild(amountLabel);
+            container.appendChild(amountInput);
+            container.appendChild(document.createElement("br"));
+
+            categoryFieldsContainer.appendChild(container);
+          }
+        }
+      });
+      document
+        .querySelector("form")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault(); // Prevent the default form submission
+          const userID = localStorage.getItem("userID");
+          const response = await fetch(`http://localhost:3000/budget?userID=${userID}`);
+          const data = await response.json(); // Parse the JSON response
+          if (response.ok) {
+            console.log(data);
+            const BudgetID = data.Budget.Budget_ID;
+            const max = data.Budget.Total_dollars;
+            const response2 = await fetch("http://localhost:3000/categories");
+            const categories = await response2.json(); // Parse the JSON response
+            if (response2.ok) {
+                var currVal = 0;
+                categories.forEach((cat) => {
+                    currVal += parseFloat(cat.Max_amount);
+                });
+              const categoriesAmount = parseInt(
+                document.getElementById("Categories_amount").value
+              );
+              const categoryData = collectCategoryData(categoriesAmount);
+              if (!categoriesAmount) {
+                alert("Please fill in all fields!");
+                return;
+              }
+              var totalAmount = 0;
+              categoryData.forEach(([name, amount]) => {
+                totalAmount += parseFloat(amount); // Sum the amounts
+              });
+              var total = parseFloat(totalAmount) + parseFloat(currVal);
+              if (totalAmount+currVal > max) {
+                alert(
+                  "Total amount in combined categories exceeds the budget limit!"
+                );
+                return;
+              }
+              if (!userID) {
+                alert("User ID not found. Please log in again.");
+                return;
+              }
+                const response3 = await fetch("http://localhost:3000/category", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                    categoryData,
+                    BudgetID,
+                    }),
+                });
+                if (response3.ok) {
+                    alert("Categories added successfully!");
+                    window.location.href = "budget.html"; // Redirect to budget.html after successful login
+                } else {
+                    const error = await response3.json();
+                    alert(error.message);
+                }
+            } else {
+              console.error("Error fetching budget data:", response.statusText);
+            }
+          }
+        });
+      // Perform validation and registration logic here
+      function collectCategoryData(categoriesAmount) {
+        const categoryDataMap = new Map();
+
+        for (let i = 1; i <= categoriesAmount; i++) {
+          const nameInput = document.getElementById(`category_${i}_name`);
+          const amountInput = document.getElementById(`category_${i}_max`);
+
+          if (nameInput && amountInput) {
+            const name = nameInput.value.trim();
+            const amount = parseFloat(amountInput.value);
+
+            if (name && !isNaN(amount)) {
+              categoryDataMap.set(name, amount);
+            }
+          }
+        }
+
+        return Array.from(categoryDataMap.entries());
+      }
+    </script>
+  </body>
 </html>

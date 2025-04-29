@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { createUser, getUser, createBudget, createCategories, getCategories, createTransaction, refreshBudget } from './database.js'; // Import the createUser function from database.js
+import { createUser, getUser, createBudget, createCategories, getCategories, createTransaction, refreshBudget, getBudget } from './database.js'; // Import the createUser function from database.js
 const app = express();
 const port = 3000;
 
@@ -46,6 +46,16 @@ app.post('/budget', async (req, res) => {
  catch (err) {
     console.error(err);
     res.status(500).json({ message: "Budget creation failed." });
+  }
+});
+app.get('/budget', async (req, res) => { 
+  const userID = req.query.userID;
+  try {
+    const Budget = await getBudget(userID);
+    res.json({ message: "Budget fetched successfully!", Budget});
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch budget." });
   }
 });
 app.post('/category', async (req, res) => {
