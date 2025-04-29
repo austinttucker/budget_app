@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { createUser, getUser, createBudget, createCategories, getCategories, createTransaction, refreshBudget, getBudget } from './database.js'; // Import the createUser function from database.js
+import { createUser, getUser, createBudget, createCategories, getCategories, createTransaction, refreshBudget, getBudget, deleteCategories, changeBudgetCap } from './database.js'; // Import the createUser function from database.js
 const app = express();
 const port = 3000;
 
@@ -94,6 +94,26 @@ app.post('/transaction', async (req, res) => {
   {
     console.error("Transaction error: " + err);
     res.status(400).json({ message: err.message });
+  }
+});
+app.delete('/deletecategories', async (req, res) => {
+  const { categoryIDs } = req.body;
+  try {
+    await deleteCategories(categoryIDs);
+    res.json({ message: "Category deleted successfully!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to delete category." });
+  }
+});
+app.post('/budgetcap', async (req, res) => {
+  const { User_ID, budgetCap } = req.body;
+  try {
+    await changeBudgetCap(User_ID, budgetCap);
+    res.json({ message: "Budget cap changed successfully!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to change budget cap." });
   }
 });
 app.listen(port, () => {

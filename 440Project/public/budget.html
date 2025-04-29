@@ -9,8 +9,10 @@
     <h1 id="welcomeMessage"></h1>
     <div class="toggle">
       <a href="categories.html" id="toggle-link">Add Categories</a>
+      <a href="delete-categories.html" id="toggle-link">Delete Categories</a>
       <a href="new-budget-info.html" id="toggle-link">Add Budget</a>
       <a href="transaction.html" id="toggle-link">Add Transaction</a>
+      <a href="edit-budget-cap.html" id="toggle-link">Edit Budget Max</a>
       <a href="index.html" id="logout">Logout</a>
     </div>
     <div id="summary"></div>
@@ -61,9 +63,6 @@
           const categories = await response.json();
           console.log("Categories:", categories); // Debugging: Log the fetched categories
           const tbody = document.querySelector("#categoriesTable tbody");
-          var totalMax = 0;
-          var totalDolarsSpent = 0;
-          var totalRemainingDollars = 0;
           categories.forEach((cat) => {
             const row = document.createElement("tr");
             row.innerHTML = `
@@ -74,13 +73,13 @@
           <td>${cat.Remaining_dollars}</td>
         `;
             tbody.appendChild(row);
-            totalMax += parseFloat(cat.Max_amount); // Sum the max amounts
-            totalDolarsSpent += parseFloat(cat.Dollars_spent); // Sum the dollars spent
-            totalRemainingDollars += parseFloat(cat.Remaining_dollars); // Sum the remaining dollars
           });
-          document.getElementById("summary").textContent = `Total budget max: $${totalMax}`;
-          document.getElementById("summary").textContent += `\nTotal budget spent: $${totalDolarsSpent}`;
-          document.getElementById("summary").textContent += `\nTotal remaining dollars: $${totalRemainingDollars}`;
+          const userID = localStorage.getItem("userID");
+          const response2 = await fetch(`http://localhost:3000/budget?userID=${userID}`);
+          const budgetData = await response2.json();
+          document.getElementById("summary").textContent = `Total budget max: $${budgetData.Budget.Total_dollars}`;
+          document.getElementById("summary").textContent += `\nTotal budget spent: $${budgetData.Budget.Spent_dollars}`;
+          document.getElementById("summary").textContent += `\nTotal remaining dollars: $${budgetData.Budget.Remaining_dollars}`;
         } catch (err) {
           console.error("Error loading categories:", err);
         }

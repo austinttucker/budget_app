@@ -141,4 +141,12 @@ async function getBudget(userID){
         throw new Error("No budget found for the user.");
     }
 }
-export { createUser, getUser, createBudget, createCategories, getCategories, createTransaction, refreshBudget, getBudget };
+async function changeBudgetCap(userID, newCap) {
+    var Remaining_dollars = newCap - parseFloat((await db.query("SELECT * FROM BudgetTotals WHERE User_ID = ?", [userID]))[0][0].Spent_dollars);
+    await db.query("UPDATE BudgetTotals SET Total_dollars = ?, Remaining_dollars = ? WHERE User_ID = ?", [newCap, Remaining_dollars, userID]);
+}
+async function deleteCategories(Category_IDs) {
+    const placeholders = Category_IDs.map(() => "?").join(",");
+    await db.query(`DELETE FROM Categories WHERE Category_ID IN (${placeholders})`, Category_IDs);
+}
+export { createUser, getUser, createBudget, createCategories, getCategories, createTransaction, refreshBudget, getBudget, deleteCategories, changeBudgetCap };

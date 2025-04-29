@@ -136,7 +136,6 @@
             // Successful registration
             alert("Budget info submitted successfully!");
             const budgetID = data.budgetID; // Assuming the server returns the budget ID in the response
-            //console.log("Budget ID:", budgetID); // Debugging: Log values to check
             const response2 = await fetch("http://localhost:3000/category", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -148,7 +147,6 @@
             if (response2.ok) {
               // Successful registration
               alert("Category info submitted successfully!");
-              //localStorage.setItem("Budget_ID", Budget_ID);
               window.location.href = "budget.html"; // Redirect to budget.html after successful login
             } else {
               const result = await response2.json();
