@@ -8,11 +8,26 @@
   <body>
     <h1 id="welcomeMessage"></h1>
     <div class="toggle">
-      <a href="budget-info.html" id="toggle-link">Edit Budget Info</a>
+      <a href="categories.html" id="toggle-link">Add Categories</a>
       <a href="new-budget-info.html" id="toggle-link">Add Budget</a>
       <a href="transaction.html" id="toggle-link">Add Transaction</a>
       <a href="index.html" id="logout">Logout</a>
     </div>
+    <div id="summary"></div>
+    <table id="categoriesTable" border="1">
+      <thead>
+        <tr>
+          <th>Category Name</th>
+          <th>Max Amount</th>
+          <th>Dollars Spent</th>
+          <th>Number of Transactions</th>
+          <th>Remaining Dollars</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Rows will be inserted here dynamically -->
+      </tbody>
+    </table>
     <script>
       window.addEventListener("DOMContentLoaded", function () {
         const userName = localStorage.getItem("userName");
@@ -38,6 +53,38 @@
 
           console.log("Logout link clicked!");
         });
+      document.addEventListener("DOMContentLoaded", async () => {
+        try {
+          const response = await fetch(
+            "http://localhost:3000/categories"
+          );
+          const categories = await response.json();
+          console.log("Categories:", categories); // Debugging: Log the fetched categories
+          const tbody = document.querySelector("#categoriesTable tbody");
+          var totalMax = 0;
+          var totalDolarsSpent = 0;
+          var totalRemainingDollars = 0;
+          categories.forEach((cat) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+          <td>${cat.Category_name}</td>
+          <td>${cat.Max_amount}</td>
+          <td>${cat.Dollars_spent}</td>
+          <td>${cat.Num_transactions}</td>
+          <td>${cat.Remaining_dollars}</td>
+        `;
+            tbody.appendChild(row);
+            totalMax += parseFloat(cat.Max_amount); // Sum the max amounts
+            totalDolarsSpent += parseFloat(cat.Dollars_spent); // Sum the dollars spent
+            totalRemainingDollars += parseFloat(cat.Remaining_dollars); // Sum the remaining dollars
+          });
+          document.getElementById("summary").textContent = `Total budget max: $${totalMax}`;
+          document.getElementById("summary").textContent += `\nTotal budget spent: $${totalDolarsSpent}`;
+          document.getElementById("summary").textContent += `\nTotal remaining dollars: $${totalRemainingDollars}`;
+        } catch (err) {
+          console.error("Error loading categories:", err);
+        }
+      });
     </script>
   </body>
 </html>

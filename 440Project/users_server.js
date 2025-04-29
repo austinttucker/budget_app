@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { createUser, getUser, createBudget, createCategories, getCategories, createTransaction } from './database.js'; // Import the createUser function from database.js
+import { createUser, getUser, createBudget, createCategories, getCategories, createTransaction, refreshBudget } from './database.js'; // Import the createUser function from database.js
 const app = express();
 const port = 3000;
 
@@ -24,11 +24,8 @@ app.post('/login', async (req, res) => {
   const { user_ID, userName, password } = req.body;
   try{
     const userID = await getUser(user_ID, userName, password);
-    if (userID === "P") {
-      return res.status(401).json({ message: "Invalid password." });
-    }
-    if(userID ==="U"){
-      return res.status(401).json({ message: "User not found." });
+    if(userID){
+      await refreshBudget(userID);
     }
     res.json({ message: "Login successful!", userID, userName });
   }
@@ -89,7 +86,6 @@ app.post('/transaction', async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
-
 app.listen(port, () => {
   console.log(`🚀 Server running on http://localhost:${port}`);
 });

@@ -86,7 +86,7 @@ async function createCategories(Budget_ID, CategoryData){
 }
 async function getCategories() {
     try {
-        const [categories] = await db.query("SELECT Category_name FROM Categories");
+        const [categories] = await db.query("SELECT * FROM Categories");
         return categories;
     } catch (err) {
         console.error(err);
@@ -120,4 +120,17 @@ async function createTransaction(Transaction_amount, Transaction_name, category)
     );
     return result.insertId;
 }
-export { createUser, getUser, createBudget, createCategories, getCategories, createTransaction };
+async function refreshBudget(userID) {
+    const [rows] = await db.query("SELECT * FROM BudgetTotals WHERE User_ID = ?", [userID]);
+    if (rows.length > 0) {
+        const budget = rows[0];
+        const currentDate = new Date().toISOString().slice(0, 10);
+        if (budget.End_refresh_date <= currentDate) {
+            // Refresh the budget
+            await db.query("UPDATE BudgetTotals SET Spent_dollars = ?, Remaining_dollars = ? WHERE User_ID = ?", [0, budget.Total_dollars, userID]);
+            return true;
+        }
+    }
+    return false;
+}
+export { createUser, getUser, createBudget, createCategories, getCategories, createTransaction, refreshBudget };
