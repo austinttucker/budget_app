@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form id="delete-form">
+      <label for="categories">Select Categories to Delete:</label><br />
+      <p>To select muliple, hold Ctrl and click</p>
+      <select id="categories" name="categories" multiple required>
+        <!-- Options will be inserted dynamically --></select
+      ><br /><br />
+      <button type="submit">Delete Selected Categories</button>
+    </form>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        const select = document.getElementById("categories");
+
+        try {
+          const response = await fetch("http://localhost:3000/categories");
+          const data = await response.json();
+          data.forEach((cat) => {
+            const option = document.createElement("option");
+            option.value = cat.Category_ID; // use ID to delete
+            option.textContent = cat.Category_name;
+            select.appendChild(option);
+          });
+        } catch (err) {
+          console.error("Error loading categories:", err);
+        }
+
+        document
+          .getElementById("delete-form")
+          .addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const selected = Array.from(select.selectedOptions).map(
+              (opt) => opt.value
+            );
+            const response = await fetch(
+              "http://localhost:3000/deletecategories",
+              {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ categoryIDs: selected }),
+              }
+            );
+
+            if (response.ok) {
+              alert("Categories deleted successfully!");
+              window.location.href = "budget.html"; // Redirect to budget.html after successful login
+            } else {
+              alert("Failed to delete categories.");
+            }
+          });
+      });
+    </script>
+  </body>
+</html>

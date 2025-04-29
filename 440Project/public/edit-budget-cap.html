@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form id="budget-form" action="budget.html" method="post">
+        <label for="Total_Dollars">New Budget Cap:</label>
+        <input
+          type="text"
+          id="Total_dollars"
+          name="Total_dollars"
+          required
+        /><br /><br />
+  
+        <input type="submit" value="Submit" />
+        <input type="reset" value="Reset" /><br /><br />
+      </form>
+      <script>
+        document
+          .querySelector("form")
+          .addEventListener("submit", async function (event) {
+            event.preventDefault(); // Prevent the default form submission
+  
+            // Perform validation and registration logic here
+            const budgetCap = document.getElementById("Total_dollars").value;
+            const User_ID = localStorage.getItem("userID"); // Retrieve User_ID from localStorage
+            if (!budgetCap) {
+              alert("Please fill in all fields!");
+              return;
+            }
+  
+            const response = await fetch("http://localhost:3000/budgetcap", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ User_ID, budgetCap }),
+            });
+  
+            if (response.ok) {
+              alert("Budget cap updated successfully!");
+              window.location.href = "budget.html"; // Redirect to the budget page
+            } else {
+              alert("Failed to update budget cap. Please try again.");
+            }
+          });
+      </script>
+</body>
+</html>
