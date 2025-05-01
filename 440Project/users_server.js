@@ -9,10 +9,10 @@ app.use(express.json());
 
 // ✅ Register route
 app.post('/register', async (req, res) => {
-  const { userName, password, email, phoneNumber, confirmPassword } = req.body;
+  const { User_ID, userName, password, email, phoneNumber, confirmPassword } = req.body;
 
   try{
-    const userID = await createUser(userName, password, email, phoneNumber);
+    const userID = await createUser(User_ID, userName, password, email, phoneNumber);
     res.json({ message: "Registration successful!", userID });
   }
  catch (err) {
@@ -21,10 +21,13 @@ app.post('/register', async (req, res) => {
   }
 });
 app.post('/login', async (req, res) => {
-  const { user_ID, userName, password } = req.body;
+  const { userID, userName, password } = req.body;
   try{
-    const userID = await getUser(user_ID, userName, password);
-    if(userID){
+    const user_ID = await getUser(userID, userName, password);
+    if(user_ID === "P" || user_ID === "U"){
+      return res.status(401).json({ message: "Invalid credentials." });
+    }
+    if(user_ID){
       await refreshBudget(userID);
     }
     res.json({ message: "Login successful!", userID, userName });
@@ -73,9 +76,9 @@ app.post('/category', async (req, res) => {
   }
 });
 app.get('/categories', async (req, res) => {
+  const budgetID = req.query.budgetID;
   try {
-    //console.log(await getCategories());
-    res.json(await getCategories());
+    res.json(await getCategories(budgetID));
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to fetch categories." });

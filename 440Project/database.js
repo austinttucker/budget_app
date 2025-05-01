@@ -32,13 +32,12 @@ async function getUser(User_ID, User_name, User_password) {
 }
 
 
-async function createUser(User_Name, User_password, Email, Phone_number) {
-    const User_ID = Math.floor(Math.random() * 1000000) // Generate a random user ID
+async function createUser(User_ID, User_Name, User_password, Email, Phone_number) {
     // Check if the user ID already exists in the database
     const [existingUser] = await db.query("SELECT * FROM users WHERE User_ID = ?", [User_ID])
     if (existingUser.length > 0) {
         // If the user ID already exists, generate a new one and check again
-        return createUser(User_Name, User_Password, Email, Phone_number);
+        return createUser(User_ID, User_Name, User_Password, Email, Phone_number);
     }
     const [result] = await db.query("INSERT INTO users (User_ID, User_Name, User_password, Email, Phone_number) VALUES (?, ?, ?, ?, ?)",
          [User_ID, User_Name, User_password, Email, Phone_number]);
@@ -84,9 +83,12 @@ async function createCategories(Budget_ID, CategoryData){
         );
     }
 }
-async function getCategories() {
+async function getCategories(budgetID) {
     try {
-        const [categories] = await db.query("SELECT * FROM Categories");
+        const [categories] = await db.query("SELECT * FROM Categories WHERE Budget_ID = ?", [budgetID]);
+        if (categories.length === 0) {
+            return []; // No categories found for the given budget ID
+        }
         return categories;
     } catch (err) {
         console.error(err);
@@ -122,6 +124,7 @@ async function createTransaction(Transaction_amount, Transaction_name, category)
 }
 async function refreshBudget(userID) {
     const [rows] = await db.query("SELECT * FROM BudgetTotals WHERE User_ID = ?", [userID]);
+    console.log(userID);
     if (rows.length > 0) {
         const budget = rows[0];
         const currentDate = new Date().toISOString().slice(0, 10);
@@ -138,7 +141,8 @@ async function getBudget(userID){
     if (rows.length > 0) {
         return rows[0];
     } else {
-        throw new Error("No budget found for the user.");
+        //throw new Error("No budget found for the user.");
+        return;
     }
 }
 async function changeBudgetCap(userID, newCap) {

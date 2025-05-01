@@ -149,6 +149,7 @@
             if (response2.ok) {
               // Successful registration
               alert("Category info submitted successfully!");
+              localStorage.setItem("budgetID", budgetID); // Store the budget ID in localStorage
               window.location.href = "budget.html"; // Redirect to budget.html after successful login
             } else {
               const result = await response2.json();

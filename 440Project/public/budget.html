@@ -58,7 +58,7 @@
 
     document.addEventListener("DOMContentLoaded", async () => {
       try {
-        const response = await fetch("http://localhost:3000/categories");
+        const response = await fetch("http://localhost:3000/categories?budgetID=" + localStorage.getItem("budgetID"));
         const categories = await response.json();
         const tbody = document.querySelector("#categoriesTable tbody");
         categories.forEach((cat) => {
