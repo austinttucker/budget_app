@@ -110,3 +110,41 @@ input[type="reset"]:hover {
 #toggle-link:hover {
     text-decoration: underline;
 }
+
+.nav-link {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    margin: 0.4rem;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #007bff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .nav-link:hover {
+    background-color: #007bff;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  }
+  
+  .logout-link {
+    border-color: #dc3545;
+    color: #dc3545;
+  }
+  
+  .logout-link:hover {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .toggle {
+    text-align: center;
+    margin: 1rem auto;
+    flex-wrap: wrap;
+  }
+  

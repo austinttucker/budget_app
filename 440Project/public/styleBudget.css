@@ -1,0 +1,126 @@
+/* General Layout */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f4f6f9;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  header.top-bar {
+    padding: 1rem;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    text-align: center;
+  }
+  
+  #welcomeMessage {
+    margin-bottom: 1rem;
+  }
+  
+  /* Navigation Buttons */
+  .toggle {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .nav-link {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #007bff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .nav-link:hover {
+    background-color: #007bff;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+  }
+  
+  .logout-link {
+    border-color: #dc3545;
+    color: #dc3545;
+  }
+  
+  .logout-link:hover {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  /* Main Content Centering */
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  #summary {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    white-space: pre-line;
+    font-size: 1rem;
+    color: #333;
+  }
+  
+  .table-container {
+    overflow-x: auto;
+  }
+  
+  #categoriesTable {
+    border-collapse: collapse;
+    width: 90%;
+    max-width: 900px;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  }
+  
+  #categoriesTable th,
+  #categoriesTable td {
+    padding: 0.75rem 1rem;
+    text-align: center;
+    border: 1px solid #ddd;
+  }
+  
+  #categoriesTable th {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  #categoriesTable tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+  .main-content {
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* Add spacing under the nav buttons */
+  .toggle {
+    margin-bottom: 2rem;
+  }
+  
+  /* Summary styling */
+  #summary {
+    margin-bottom: 1rem;
+    text-align: center;
+    white-space: pre-line;
+    font-size: 1rem;
+    color: #333;
+  }
+  
