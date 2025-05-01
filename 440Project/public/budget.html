@@ -51,14 +51,14 @@
 
     document.getElementById("logout").addEventListener("click", function (event) {
       event.preventDefault();
-      localStorage.clear();
       window.location.href = "index.html";
-      console.log("Logout link clicked!");
     });
 
     document.addEventListener("DOMContentLoaded", async () => {
       try {
-        const response = await fetch("http://localhost:3000/categories?budgetID=" + localStorage.getItem("budgetID"));
+        const budgetID = localStorage.getItem("budgetID");
+        const userID = localStorage.getItem("userID");
+        const response = await fetch(`http://localhost:3000/categories?budgetID=${budgetID}&userID=${userID}`);
         const categories = await response.json();
         const tbody = document.querySelector("#categoriesTable tbody");
         categories.forEach((cat) => {
@@ -73,7 +73,6 @@
           tbody.appendChild(row);
         });
 
-        const userID = localStorage.getItem("userID");
         const response2 = await fetch(`http://localhost:3000/budget?userID=${userID}`);
         const budgetData = await response2.json();
         const summary = document.getElementById("summary");

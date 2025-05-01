@@ -80,8 +80,6 @@
           }
           let User_ID = Math.floor(Math.random() * 1000000); // Generate a random user ID
           // Here you would typically send the data to the server for registration
-          // console.log("User registered:", { userId, password, email, phoneNumber });
-          // alert("Registration successful!");
           const response = await fetch("http://localhost:3000/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -92,7 +90,7 @@
             // Successful registration
             alert("Registration successful!");
             alert("STORE THIS! User ID: " + User_ID); // Debugging: Log values to check
-            window.location.href = "index.html"; // <-- redirect to your homepage
+            window.location.href = "index.html"; // redirect to homepage
           } else {
             const result = await response.json();
             alert(result.message || "Registration failed");

@@ -49,7 +49,6 @@ async function createBudget(Total_dollars, Categories_amount, budget_length, Use
     const Remaining_dollars = Total_dollars;
     const Start_date = new Date().toISOString().slice(0, 10); // Get the current date in YYYY-MM-DD format
     var End_refresh_date;
-    //console.log("Budget length: " + budget_length);
     if(budget_length === "Weekly") {
         End_refresh_date = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10); // Add 7 days to the current date
     }
@@ -83,8 +82,12 @@ async function createCategories(Budget_ID, CategoryData){
         );
     }
 }
-async function getCategories(budgetID) {
+async function getCategories(budgetID, userID) {
     try {
+        const [r] = await db.query("SELECT * FROM BudgetTotals WHERE Budget_ID = ? AND User_ID = ?", [budgetID, userID]);
+        if (r.length === 0) {
+            return []; // No budget found for the user
+        }
         const [categories] = await db.query("SELECT * FROM Categories WHERE Budget_ID = ?", [budgetID]);
         if (categories.length === 0) {
             return []; // No categories found for the given budget ID
@@ -141,7 +144,6 @@ async function getBudget(userID){
     if (rows.length > 0) {
         return rows[0];
     } else {
-        //throw new Error("No budget found for the user.");
         return;
     }
 }

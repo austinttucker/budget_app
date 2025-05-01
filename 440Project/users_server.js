@@ -77,8 +77,9 @@ app.post('/category', async (req, res) => {
 });
 app.get('/categories', async (req, res) => {
   const budgetID = req.query.budgetID;
+  const userID = req.query.userID; 
   try {
-    res.json(await getCategories(budgetID));
+    res.json(await getCategories(budgetID, userID));
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to fetch categories." });
